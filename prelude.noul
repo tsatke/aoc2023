@@ -19,3 +19,5 @@ intersection := \l, r -> (
 	));
 	res
 );
+
+regex_matches := \v, pat -> (v search pat) then tail;
