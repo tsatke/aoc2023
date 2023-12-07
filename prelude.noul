@@ -1,0 +1,11 @@
+read_input := \-> read_file? F"/dev/stdin";
+empty := \v -> len(v) == 0;
+not_empty := \v -> not(empty(v));
+
+ints := \v -> v search_all R"-?\d+" map int;
+
+four_adjacencies := \[i, j] -> [V(i-1, j), V(i, j-1), V(i, j+1), V(i+1, j)];
+five_adjacencies := \[i, j] -> [V(i-1, j), V(i, j-1), V(i, j), V(i, j+1), V(i+1, j)];
+nine_adjacencies := \[i, j] -> ((i-1) to (i+1)) ** ((j-1) to (j+1)) map vector;
+eight_adjacencies := \p -> (nine_adjacencies(p) filter (_ != vector(p)));
+
