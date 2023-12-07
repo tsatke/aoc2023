@@ -1,0 +1,74 @@
+import "prelude.noul";
+
+puzzle_input := read_input();
+rows := puzzle_input.lines then count;
+cols := puzzle_input.lines then first then len;
+
+# part1
+
+grid := puzzle_input.lines
+	map (\l -> l split '' filter not_empty);
+
+read_grid := \c -> (grid[c[0]][c[1]]);
+
+with_coords := grid
+	then enumerate
+	flat_map (\[row_num, row] -> (
+		row
+			then enumerate
+			map (\[col_num, char] -> (
+				[[row_num, col_num], char]
+			))
+	));
+
+left_of := _ - V(0, 1);
+right_of := _ + V(0, 1);
+
+find_start_of_number := \v -> (
+	if (v[1] == 0) return v;
+	while (v[1] > 0) (
+		if ((left_of(v) then read_grid then is_digit) == 0) break;
+		v = left_of(v);
+	);
+	v
+);
+
+has_digit_at := _ then read_grid then is_digit;
+
+find_number := \v -> (
+	buf := read_grid(v);
+	while (v[1] < cols - 1) (
+		if (not(right_of(v) then has_digit_at)) break;
+		v = right_of(v);
+		buf $= read_grid(v);
+	);
+	int(buf)
+);
+
+with_coords
+	filter (\[_, char] -> not(char search R"(\.|[0-9])"))
+	map first                       # all coordinates of special characters
+	map eight_adjacencies           # all adjacent fields that we need to check
+	flat_map (_ filter has_digit_at)
+	map find_start_of_number
+	then unique
+	map find_number
+	fold +
+	then print;
+
+# part2
+
+with_coords
+	filter (\[_, char] -> char == '*')
+	map first
+	map eight_adjacencies
+	map (
+		_ filter has_digit_at
+		map find_start_of_number
+		then unique
+	)
+	filter (\v -> len(v) == 2)
+	map (_ map find_number)
+	map (_ fold *)
+	fold +
+	then print;
