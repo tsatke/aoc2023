@@ -1,0 +1,50 @@
+import "prelude.noul";
+
+puzzle_input := read_input();
+
+# needs a card [[1, 2, 3], [3, 5, 6, 8, 9]]
+matching_cards := \[l, r] ->
+	l intersection r
+	then count;
+
+points := _
+	then matching_cards
+	then (\v -> (
+		if (v == 0) return 0;
+		2 ^ (v - 1)
+	));
+
+card_numbers := _ regex_matches R".*?:(.*)\|(.*)"
+	map ints;
+
+# part1
+
+puzzle_input.lines
+	map card_numbers
+	map points
+	fold +
+	then print;
+
+# part2
+
+cards := puzzle_input.lines
+	map (\v -> [v then ints then first, v then card_numbers]);
+cards_dict := cards then dict;
+
+total_cards := cards
+	map (\v -> [first v, 1])
+	then dict;
+
+# in: card, out: list of cards
+gains := \card -> for (x <- 0 til ((cards_dict[card]) then matching_cards)) yield (card + x + 1);
+
+# initial cards are ordered and contiguous from 1 to len(cards)
+for (card <- 1 to len(cards)) (
+	amount_owned := total_cards[card];
+	gains(card)
+		each (\gain -> (total_cards[gain] += amount_owned));
+);
+total_cards
+	then values
+	fold +
+	then print;
