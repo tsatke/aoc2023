@@ -1,0 +1,57 @@
+import "prelude.noul";
+
+puzzle_input := read_input();
+
+# part1
+max_red := 12;
+max_green := 13;
+max_blue := 14;
+
+color_amount := \round, color -> (
+	amount := 0;
+	maybe := round search_all R"(\d+) " $ color;
+	if (len(maybe) == 1)
+		amount = int(last(maybe[0]));
+	amount
+);
+
+game_valid := \game -> (
+	rounds := game split ":" then last split ";" map trim;
+	for (round <- rounds) (
+		reds := round color_amount "red";
+		greens := round color_amount "green";
+		blues := round color_amount "blue";
+
+		if((reds > max_red) | (greens > max_green) | (blues > max_blue))
+			return 0;
+	);
+	1
+);
+
+puzzle_input.lines
+	map (\v -> [v then ints then first, v])
+	filter (\v -> game_valid(v[1]))
+	map first
+	fold +
+	then print;
+
+# part2
+
+# [[r, g, b]; [r, g, b]; ...]
+rounds := \game -> (
+	game
+		split ":"
+		then last
+		split ";"
+		map trim
+		map (\v -> [v color_amount "red", v color_amount "green", v color_amount "blue"])
+);
+
+puzzle_input.lines
+	map rounds
+	map (\g -> g fold (
+		\l, r -> [max(l[0], r[0]), max(l[1], r[1]), max(l[2], r[2])])
+	)
+	map (fold *)
+	fold +
+	then print;
