@@ -9,3 +9,13 @@ five_adjacencies := \[i, j] -> [V(i-1, j), V(i, j-1), V(i, j), V(i, j+1), V(i+1,
 nine_adjacencies := \[i, j] -> ((i-1) to (i+1)) ** ((j-1) to (j+1)) map vector;
 eight_adjacencies := \p -> (nine_adjacencies(p) filter (_ != vector(p)));
 
+intersection := \l, r -> (
+	x := dict(l zip (repeat 1));
+	res := [];
+	r each (\v -> (
+		if (v in x) (
+			res = res append v;
+		);
+	));
+	res
+);
