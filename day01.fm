@@ -8,14 +8,6 @@ part_one := puzzle_input
 	map (\l -> l(0) * 10 + l(1))
 	fold +;
 
-flat_map := \l, f -> (
-	res := [];
-	l map f each (\r -> res = res ++ r);
-	res
-);
-
-peek := \l, f -> (l map (\v -> (v then f; v)));
-
 part_two := puzzle_input
 	then lines
 	filter (\v -> v then chars then len != 0)
